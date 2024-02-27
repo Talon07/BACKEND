@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
 
-const ProductManager = require("../controllers/product-manager.js");
-const productManager = new ProductManager("./src/models/productos.json");
+const ProductManager = require("../controllers/product-manager-db.js");
+const productManager = new ProductManager();
 
 //1) Listamos los productos
 router.get("/", async (req, res) => {
@@ -29,7 +29,7 @@ router.get("/:pid", async (req, res) => {
   let id = req.params.pid;
 
   try {
-    const producto = await productManager.getProductById(parseInt(id));
+    const producto = await productManager.getProductById(id);
     if (!producto) {
       res.json({
         error: "El producto no existe",
@@ -63,7 +63,7 @@ router.put("/:pid", async (req, res) => {
   const productoActualizado = req.body;
 
   try {
-    await productManager.updateProduct(parseInt(id), productoActualizado);
+    await productManager.updateProduct(id, productoActualizado);
     res.json({ message: "Producto actualizado correctamente" });
   } catch (error) {
     console.log("No pudimos actualizar, vamos a morir ", error);
@@ -75,7 +75,7 @@ router.delete("/:pid", async (req, res) => {
   let id = req.params.pid;
 
   try {
-    await productManager.deleteProduct(parseInt(id));
+    await productManager.deleteProduct(id);
     res.json({ message: "Pruducto eliminado correctamente" });
   } catch (error) {
     console.log("No se pudo eliminar el producto");

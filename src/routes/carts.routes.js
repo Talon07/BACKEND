@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const CartManager = require("../controllers/cart-manager.js");
-const cartManager = new CartManager("./src/models/carts.json");
+const CartManager = require("../controllers/cart-manajer-db.js");
+const cartManager = new CartManager();
 
 //1) creamos un nuevo carrito:
 
@@ -17,7 +17,7 @@ router.post("/", async (req, res) => {
 
 //2) Listamos los productos que pertenecen a tal carrito.
 router.get("/:cid", async (req, res) => {
-  const cartId = parseInt(req.params.cid);
+  const cartId = req.params.cid;
   try {
     const carrito = await cartManager.getCarritoById(cartId);
     res.json(carrito.products);
@@ -31,12 +31,12 @@ router.get("/:cid", async (req, res) => {
 
 //3) Agregar productos a diferentes carritos
 router.post("/:cid/product/:pid", async (req, res) => {
-  const cartId = parseInt(req.params.cid);
+  const cartId = req.params.cid;
   const productId = req.params.pid;
   const quantity = req.body.quantity || 1; // Utilizamos req.body para obtener el campo "quantity" de la solicitud (En el futuro vamos a tomar la cantidad de un contador)
 
   try {
-    const actualizarCarrito = await cartManager.addProductCart(
+    const actualizarCarrito = await cartManager.agregarProductoAlCarrito(
       cartId,
       productId,
       quantity
