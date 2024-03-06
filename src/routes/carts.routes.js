@@ -1,50 +1,93 @@
 const express = require("express");
 const router = express.Router();
-const CartManager = require("../controllers/cart-manajer-db.js");
-const cartManager = new CartManager();
+const CartManagerDb = require("../controllers/cart-manager-db.js");
+const cartManagerDb = new CartManagerDb();
 
-//1) creamos un nuevo carrito:
+router.use(express.static("./src/public"));
+
+router.get("/view", async (req, res) => {
+  try {
+    const newCart = await cartManagerDb.getCartById("65dabc56bf0e38b152737f40");
+    res.render("cart", {
+      cart: JSON.stringify(newCart),
+      active: { cart: true },
+    });
+  } catch (err) {
+    console.log("err:", err);
+    res.status(500).json({ message: "Server problems" });
+  }
+});
 
 router.post("/", async (req, res) => {
   try {
-    const nuevoCarrito = await cartManager.crearCarrito();
-    res.json(nuevoCarrito);
-  } catch (error) {
-    console.error("error al crear un nuevo carrito", error);
-    res.status(500).json({ error: "error interno del servidor" });
+    const newCart = await cartManagerDb.createCart();
+    res.json({ message: `Cart created with id ${newCart._id}` });
+  } catch (err) {
+    res.status(500).json({ message: "Server problems" });
   }
 });
 
-//2) Listamos los productos que pertenecen a tal carrito.
 router.get("/:cid", async (req, res) => {
-  const cartId = req.params.cid;
+  const { cid } = req.params;
   try {
-    const carrito = await cartManager.getCarritoById(cartId);
-    res.json(carrito.products);
-  } catch (error) {
-    console.error("Error al obtener el carrito", error);
-    res
-      .status(500)
-      .strictContentLength({ error: "error interno del servidor" });
+    const cart = await cartManagerDb.getCartById(cid);
+    if (cart) {
+      res.status(200).json(cart);
+    } else {
+      res.status(404).json({ message: `Cart with id ${cid} not found` });
+    }
+  } catch (err) {
+    res.status(500).json({ message: "Server problems" });
   }
 });
 
-//3) Agregar productos a diferentes carritos
-router.post("/:cid/product/:pid", async (req, res) => {
-  const cartId = req.params.cid;
-  const productId = req.params.pid;
-  const quantity = req.body.quantity || 1; // Utilizamos req.body para obtener el campo "quantity" de la solicitud (En el futuro vamos a tomar la cantidad de un contador)
-
+router.put("/:cid/product/:pid", async (req, res) => {
   try {
-    const actualizarCarrito = await cartManager.agregarProductoAlCarrito(
-      cartId,
-      productId,
-      quantity
-    );
-    res.json(actualizarCarrito.products);
-  } catch (error) {
-    console.error("Error al agregar producto al carrito", error);
-    res.status(500).json({ error: "error interno del servidor" });
+    const quantity = req.body.quantity;
+    const { cid, pid } = req.params;
+    if (cid && pid) {
+      const status = await cartManagerDb.addToCart(cid, pid, quantity);
+      res.status(200).json({ messsage: status });
+    }
+  } catch (err) {
+    res.status(500).json({ message: err });
+  }
+});
+
+router.delete("/:cid/product/:pid", async (req, res) => {
+  try {
+    const { cid, pid } = req.params;
+    if (cid && pid) {
+      const status = await cartManagerDb.deleteFromCart(cid, pid);
+      res.status(200).json({ messsage: status });
+    }
+  } catch (err) {
+    res.status(500).json({ message: err });
+  }
+});
+
+router.delete("/:cid/", async (req, res) => {
+  try {
+    const { cid } = req.params;
+    if (cid) {
+      const status = await cartManagerDb.deleteAllProductsFromCart(cid);
+      res.status(200).json({ messsage: status });
+    }
+  } catch (err) {
+    res.status(500).json({ message: err });
+  }
+});
+
+router.put("/:cid", async (req, res) => {
+  try {
+    const { cid } = req.params;
+    if (cid) {
+      const products = req.body;
+      const status = await cartManagerDb.addProductsToCart(cid, products);
+      res.status(200).json({ messsage: status });
+    }
+  } catch (err) {
+    res.status(500).json({ message: err });
   }
 });
 

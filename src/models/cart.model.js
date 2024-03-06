@@ -3,9 +3,10 @@ const mongoose = require("mongoose");
 const cartSchema = new mongoose.Schema({
   products: [
     {
+      _id: false,
       product: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Product",
+        ref: "products",
         required: true,
       },
       quantity: {

@@ -1,107 +1,148 @@
-const ProductModel = require("../models/product.model.js");
+const ProductModel = require("../models/product.model");
 
-class ProductManager {
-  async addProduct({
-    title,
-    description,
-    price,
-    img,
-    code,
-    stock,
-    category,
-    thumbnails,
-  }) {
+class ProductManagerDb {
+  async addProduct(product) {
     try {
-      if (!title || !description || !price || !code || !stock || !category) {
-        console.log("Todos los campos son obligatorios");
-        return;
+      if (!this.checkNewProduct(product)) {
+        throw "Producto invalido";
       }
-
-      const existeProducto = await ProductModel.findOne({ code: code });
-
-      if (existeProducto) {
-        console.log("El código debe ser unico");
-        return;
+      const productExists = await ProductModel.findOne({ code: product.code });
+      if (productExists) {
+        return "El codigo del producto ya existe";
       }
-
-      const nuevoProducto = new ProductModel({
-        title,
-        description,
-        price,
-        img,
-        code,
-        stock,
-        category,
+      const newProduct = new ProductModel({
+        ...product,
         status: true,
-        thumbnails: thumbnails || [],
+        thumbnails: product.thumbnails || [],
       });
-
-      await nuevoProducto.save();
-    } catch (error) {
-      console.log("Error al agregar un producto", error);
-      throw error;
+      newProduct.save();
+      return newProduct;
+    } catch (err) {
+      console.log("Error al agregar un producto:", err);
+      throw err;
     }
   }
 
-  async getProducts() {
+  async getProducts(queryObject) {
+    const limit = queryObject.limit;
+    const page = queryObject.page;
+    const sort = queryObject.sort;
+    const query = queryObject.query;
+    let products;
     try {
-      const productos = await ProductModel.find();
-      return productos;
-    } catch (error) {
-      console.log("Error al recuperar los productos", error);
-      throw error;
+      let args = {
+        limit: limit || 10,
+        page: page || 1,
+        lean: true,
+      };
+      if (sort) {
+        args.sort = { price: sort };
+      }
+      if (query) {
+        products = await ProductModel.paginate({ category: query }, args);
+      } else {
+        products = await ProductModel.paginate({}, args);
+      }
+      products.prevLink = this.handleQueryString(
+        queryObject,
+        products.prevPage
+      );
+      products.nextLink = this.handleQueryString(
+        queryObject,
+        products.nextPage
+      );
+      return products;
+    } catch (err) {
+      console.log("error:", err);
+      throw err;
+    }
+  }
+
+  handleQueryString(queryObject, value) {
+    if (value) {
+      const queryArr = Object.keys(queryObject).map((e) =>
+        e == "page" ? `${e}=${value}` : `${e}=${queryObject[e]}`
+      );
+      console.log("queryString:", queryArr);
+      if (!queryObject.page) {
+        queryArr.push(`page=${value}`);
+      }
+      return "/api/products/view?" + queryArr.join("&");
+    }
+    return null;
+  }
+
+  async getProductsLean() {
+    try {
+      const products = await ProductModel.find().lean();
+      return products;
+    } catch (err) {
+      throw err;
     }
   }
 
   async getProductById(id) {
     try {
-      const producto = await ProductModel.findById(id);
-      if (!producto) {
-        console.log("Producto no encontrado, vamos a morir");
-        return null;
+      const product = await ProductModel.findById(id).lean();
+      if (!product) {
+        throw "Product not found";
       }
-
       console.log("Producto encontrado");
-      return producto;
-    } catch (error) {
-      console.log("Error al recuperar producto por ID", error);
-      throw error;
+      return product;
+    } catch (err) {
+      console.log("Error al buscar producto:", err);
+      throw err;
     }
   }
 
-  async updateProduct(id, productoActualizado) {
+  async updateProduct(id, updatedProduct) {
     try {
-      const updateProduct = await ProductModel.findByIdAndUpdate(
+      const newProduct = await ProductModel.findByIdAndUpdate(
         id,
-        productoActualizado
+        updatedProduct
       );
-
-      if (!updateProduct) {
-        console.log("Producto no encontrado, vamos a morir");
-        return null;
+      if (!newProduct) {
+        throw "Product to update not found";
       }
       console.log("Producto actualizado");
-      return updateProduct;
-    } catch (error) {
-      console.log("Error al actualizar producto por ID", error);
-      throw error;
+      return newProduct;
+    } catch (err) {
+      console.log("Error al actualizar producto:", err);
+      throw err;
     }
   }
 
   async deleteProduct(id) {
     try {
       const deleteProduct = await ProductModel.findByIdAndDelete(id);
-
       if (!deleteProduct) {
-        console.log("Producto no encontrado, vamos a morir");
-        return null;
+        throw "Product to delete not found";
       }
       console.log("Producto eliminado");
-    } catch (error) {
-      console.log("Error eliminar producto por ID", error);
-      throw error;
+    } catch (err) {
+      console.log("Error al actualizar producto:", err);
+      throw err;
     }
+  }
+
+  checkNewProduct(product) {
+    const fields = [
+      "title",
+      "description",
+      "price",
+      "code",
+      "stock",
+      "category",
+    ];
+    if (
+      fields.every((e) => {
+        return !!product[e];
+      })
+    ) {
+      return true;
+    }
+    return false;
   }
 }
 
-module.exports = ProductManager;
+module.exports = ProductManagerDb;
