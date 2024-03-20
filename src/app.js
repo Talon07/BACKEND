@@ -14,8 +14,6 @@ const sessionRouter = require("./routes/sessions.router.js");
 const initializePassport = require("./config/passport.config.js");
 const passport = require("passport");
 
-//LOGIN CON FACEBOOK
-
 //Middleware
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -47,6 +45,11 @@ app.set("views", "./src/views");
 //Rutas:
 app.use("/api/products", productsRouter);
 app.use("/api/carts", cartsRouter);
+app.use("/", viewsRouter);
+
+///////////////////////////////////
+app.use("/api/users", userRouter);
+app.use("/api/sessions", sessionRouter);
 app.use("/", viewsRouter);
 
 //Session
