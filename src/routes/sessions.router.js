@@ -12,7 +12,7 @@ router.post("/sessionlogin", async (req, res) => {
 
     if (usuario) {
       //Aca metemos el login:
-      if (usuario.password === password) {
+      if (usuario.password === process.env.DB_PASSWORD) {
         req.session.login = true;
         res
           .status(200)

@@ -77,15 +77,15 @@ const initializePassport = () => {
   });
 
   //ESTRATEGIA LOGIN CON GITHUB
-  //clientID(secreto): 5825c271a9e34223a6009287d05f9da86aad4278
-  //clientID: Iv1.51fde6eaa64e6dad
   const GitHubStrategy = require("passport-github2");
+  const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID;
+  const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
   passport.use(
     "github",
     new GitHubStrategy(
       {
-        clientID: "Iv1.51fde6eaa64e6dad",
-        clientSecret: "5825c271a9e34223a6009287d05f9da86aad4278",
+        clientID: GITHUB_CLIENT_ID,
+        clientSecret: GITHUB_CLIENT_SECRET,
         callbackURL: "http://localhost:8080/api/sessions/githubcallback",
       },
       async (accessToken, refreshToken, profile, done) => {
@@ -116,14 +116,15 @@ const initializePassport = () => {
   );
 
   //ESTRATEGIA CON FACEBOK
-  //IDENTIFICADOR DE APP: 714670824181937
-  //CLAVE SECRETA: bd94f470e1f5960a5f9b0f091dc44d7f
+
   const FacebookStrategy = require("passport-facebook");
+  const FACEBOOK_CLIENT_ID = process.env.FACEBOOK_CLIENT_ID;
+  const FACEBOOK_CLIENT_SECRET = process.env.FACEBOOK_CLIENT_SECRET;
   passport.use(
     new FacebookStrategy(
       {
-        clientID: 714670824181937,
-        clientSecret: "bd94f470e1f5960a5f9b0f091dc44d7f",
+        clientID: FACEBOOK_CLIENT_ID,
+        clientSecret: FACEBOOK_CLIENT_SECRET,
         callbackURL: "http://localhost:8080/auth/facebook/callback",
       },
       async (accessToken, refreshToken, profile, done) => {

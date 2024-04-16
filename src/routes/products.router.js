@@ -3,8 +3,6 @@ const router = express.Router();
 const ProductManager = require("../controllers/product-manager-db.js");
 const productManager = new ProductManager();
 
-//Modificacion 2 entrega:
-
 router.get("/", async (req, res) => {
   try {
     const { limit = 10, page = 1, sort, query } = req.query;

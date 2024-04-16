@@ -5,7 +5,7 @@ const CartManager = require("../controllers/cart-manager-db.js");
 const productManager = new ProductManager();
 const cartManager = new CartManager();
 
-router.get("/products", async (req, res) => {
+router.get("/productos", async (req, res) => {
   try {
     const { page = 1, limit = 2 } = req.query;
     const productos = await productManager.getProducts({

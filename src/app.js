@@ -50,7 +50,6 @@ app.use("/", viewsRouter);
 ///////////////////////////////////
 app.use("/api/users", userRouter);
 app.use("/api/sessions", sessionRouter);
-app.use("/", viewsRouter);
 
 //Session
 //Renderizamos Login de usuario con session
