@@ -2,11 +2,6 @@ body {
   background-color: whitesmoke;
 }
 
-h1 {
-  color: blue;
-  text-align: center;
-}
-
 .containerCards {
   display: flex;
   justify-content: center;
@@ -23,4 +18,163 @@ h1 {
   border-radius: 6px;
   width: 250px;
   height: 150px;
+}
+
+/* ESTILOS LOGIN */
+
+.container {
+  max-width: 400px;
+  max-height: auto;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #605f5fc5;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+input[type="email"],
+input[type="password"] {
+  width: calc(100% - 20px);
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #00000096;
+  color: #fff;
+}
+
+button[type="submit"] {
+  width: 100%;
+  padding: 10px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button[type="submit"]:hover {
+  background-color: #0056b3;
+}
+
+.oauth-buttons {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.oauth-buttons a {
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  margin: 0 10px;
+  background-color: #00000096;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.oauth-buttons a img {
+  width: 30px;
+  height: 30px;
+  margin-right: 10px;
+}
+
+.oauth-buttons a:hover {
+  background-color: #b3c1d1;
+}
+
+.container p {
+  text-align: center;
+  margin-top: 20px;
+  color: #313030;
+}
+
+.container p a {
+  color: #0462c7;
+  text-decoration: none;
+}
+
+.container p a:hover {
+  text-decoration: underline;
+}
+
+/* ESTILOS REGITER */
+
+.containerRegister {
+  display: flex;
+}
+
+.contentRegister {
+  flex: 1;
+  padding: 20px;
+}
+
+.form-container {
+  flex: 1;
+  padding: 20px;
+}
+
+/* Estilo del formulario */
+.custom-registration-form {
+  max-width: 350px;
+  margin: 0 auto;
+  background-color: #333;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+/* Estilo de los grupos de formulario */
+.custom-form-group {
+  margin-bottom: 10px;
+}
+
+/* Estilo de las etiquetas */
+.custom-label {
+  display: block;
+  margin-bottom: 5px;
+  color: #fff;
+}
+
+/* Estilo de los campos de entrada */
+.custom-form-input {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  background-color: #555;
+  color: #fff;
+}
+
+/* Estilo del botón de registro */
+.custom-btn {
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: #007bff;
+  color: #fff;
+  transition: background-color 0.3s ease;
+}
+
+.custom-btn:hover {
+  background-color: #0056b3;
 }

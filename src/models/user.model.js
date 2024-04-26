@@ -5,35 +5,35 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  provider: {
+  // provider: {
+  //   type: String,
+  //   required: true,
+  // },
+  // accountId: {
+  //   type: String,
+  //   required: true,
+  // },
+  last_name: {
     type: String,
     required: true,
   },
-  accountId: {
+
+  email: {
+    type: String,
+    required: true,
+    index: true,
+    unique: true,
+  },
+
+  password: {
     type: String,
     required: true,
   },
-  // last_name: {
-  //   type: String,
-  //   required: true,
-  // },
 
-  // email: {
-  //   type: String,
-  //   required: true,
-  //   index: true,
-  //   unique: true,
-  // },
-
-  // password: {
-  //   type: String,
-  //   required: true,
-  // },
-
-  // age: {
-  //   type: Number,
-  //   required: true,
-  // },
+  age: {
+    type: Number,
+    required: true,
+  },
 });
 
 const UserModel = mongoose.model("users", userSchema);

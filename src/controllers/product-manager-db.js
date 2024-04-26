@@ -1,151 +1,74 @@
-const ProductModel = require("../models/product.model.js");
+const ProductRepository = require("../repositories/product.repository.js");
+const productRepository = new ProductRepository();
 
-class ProductManager {
-  async addProduct({
-    title,
-    description,
-    price,
-    img,
-    code,
-    stock,
-    category,
-    thumbnails,
-  }) {
+class ProductController {
+  async addProduct(req, res) {
+    const nuevoProducto = req.body;
     try {
-      if (!title || !description || !price || !code || !stock || !category) {
-        console.log("Todos los campos son obligatorios");
-        return;
-      }
-
-      const existeProducto = await ProductModel.findOne({ code: code });
-
-      if (existeProducto) {
-        console.log("El código debe ser único, malditooo!!!");
-        return;
-      }
-
-      const newProduct = new ProductModel({
-        title,
-        description,
-        price,
-        img,
-        code,
-        stock,
-        category,
-        status: true,
-        thumbnails: thumbnails || [],
-      });
-
-      await newProduct.save();
+      const resultado = await productRepository.agregarProducto(nuevoProducto);
+      res.json(resultado);
     } catch (error) {
-      console.log("Error al agregar producto", error);
-      throw error;
+      res.status(500).send("Error");
     }
   }
 
-  async getProducts({ limit = 10, page = 1, sort, query } = {}) {
+  async getProducts(req, res) {
     try {
-      const skip = (page - 1) * limit;
+      let { limit = 5, page = 1, sort, query } = req.query;
 
-      let queryOptions = {};
-
-      if (query) {
-        queryOptions = { category: query };
-      }
-
-      const sortOptions = {};
-      if (sort) {
-        if (sort === "asc" || sort === "desc") {
-          sortOptions.price = sort === "asc" ? 1 : -1;
-        }
-      }
-
-      const productos = await ProductModel.find(queryOptions)
-        .sort(sortOptions)
-        .skip(skip)
-        .limit(limit);
-
-      const totalProducts = await ProductModel.countDocuments(queryOptions);
-
-      const totalPages = Math.ceil(totalProducts / limit);
-      const hasPrevPage = page > 1;
-      const hasNextPage = page < totalPages;
-
-      return {
-        docs: productos,
-        totalPages,
-        prevPage: hasPrevPage ? page - 1 : null,
-        nextPage: hasNextPage ? page + 1 : null,
+      const productos = await productRepository.obtenerProductos(
+        limit,
         page,
-        hasPrevPage,
-        hasNextPage,
-        prevLink: hasPrevPage
-          ? `/api/products?limit=${limit}&page=${
-              page - 1
-            }&sort=${sort}&query=${query}`
-          : null,
-        nextLink: hasNextPage
-          ? `/api/products?limit=${limit}&page=${
-              page + 1
-            }&sort=${sort}&query=${query}`
-          : null,
-      };
+        sort,
+        query
+      );
+
+      res.json(productos);
     } catch (error) {
-      console.log("Error al obtener los productos", error);
-      throw error;
+      res.status(500).send("Error");
     }
   }
 
-  async getProductById(id) {
+  async getProductById(req, res) {
+    const id = req.params.pid;
     try {
-      const producto = await ProductModel.findById(id);
-
-      if (!producto) {
-        console.log("Producto no encontrado");
-        return null;
+      const buscado = await productRepository.obtenerProductoPorId(id);
+      if (!buscado) {
+        return res.json({
+          error: "Producto no encontrado",
+        });
       }
-
-      console.log("Producto encontrado!! Claro que siiiiii");
-      return producto;
+      res.json(buscado);
     } catch (error) {
-      console.log("Error al traer un producto por id");
+      res.status(500).send("Error");
     }
   }
 
-  async updateProduct(id, productoActualizado) {
+  async updateProduct(req, res) {
     try {
-      const updateado = await ProductModel.findByIdAndUpdate(
+      const id = req.params.pid;
+      const productoActualizado = req.body;
+
+      const resultado = await productRepository.actualizarProducto(
         id,
         productoActualizado
       );
-
-      if (!updateado) {
-        console.log("No se encuentra che el producto");
-        return null;
-      }
-
-      console.log("Producto actualizado con exito, como todo en mi vidaa!");
-      return updateado;
+      res.json(resultado);
     } catch (error) {
-      console.log("Error al actualizar el producto", error);
+      res.status(500).send("Error al actualizar el producto");
     }
   }
 
-  async deleteProduct(id) {
+  async deleteProduct(req, res) {
+    const id = req.params.pid;
     try {
-      const deleteado = await ProductModel.findByIdAndDelete(id);
+      let respuesta = await productRepository.eliminarProducto(id);
 
-      if (!deleteado) {
-        console.log("No se encuentraaaa, busca bien!");
-        return null;
-      }
-
-      console.log("Producto eliminado correctamente!");
+      res.json(respuesta);
     } catch (error) {
-      console.log("Error al eliminar el producto", error);
-      throw error;
+      res.status(500).send("Error al eliminar el producto");
     }
   }
 }
 
-module.exports = ProductManager;
+module.exports = ProductController;

@@ -3,32 +3,31 @@ const app = express();
 const exphbs = require("express-handlebars");
 const PUERTO = 8080;
 require("./database.js");
+const cookieParser = require("cookie-parser");
+const session = require("express-session");
+const cors = require("cors");
+const path = require("path");
+const initializePassport = require("./config/passport.config.js");
+const passport = require("passport");
+
+const sessionRouter = require("./routes/sessions.router.js");
 const productsRouter = require("./routes/products.router.js");
 const cartsRouter = require("./routes/carts.router.js");
 const viewsRouter = require("./routes/views.router.js");
-const cookieParser = require("cookie-parser");
-const session = require("express-session");
-const MongoStore = require("connect-mongo");
 const userRouter = require("./routes/user.router.js");
-const sessionRouter = require("./routes/sessions.router.js");
-const initializePassport = require("./config/passport.config.js");
-const passport = require("passport");
 
 //Middleware
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(express.static("./src/public"));
+// app.use(express.static("./src/public"));
+app.use(express.static(path.join(__dirname, "public")));
+app.use(cors());
 app.use(cookieParser());
 app.use(
   session({
     secret: "secretCoder",
     resave: false,
     saveUninitialized: false,
-    // store: MongoStore.create({
-    //   mongoUrl:
-    //     "mongodb+srv://talonignacio07:coderhouse@cluster0.lfhc60v.mongodb.net/ecommerce?retryWrites=true&w=majority&appName=Cluster0",
-    //   ttl: 100,
-    // }),
   })
 );
 
@@ -36,6 +35,11 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 initializePassport();
+app.use(cookieParser());
+
+//AuthMiddleware
+// const authMiddleware = require("./middleware/authmiddleware.js");
+// app.use(authMiddleware);
 
 //Handlebars
 app.engine("handlebars", exphbs.engine());
@@ -45,17 +49,15 @@ app.set("views", "./src/views");
 //Rutas:
 app.use("/api/products", productsRouter);
 app.use("/api/carts", cartsRouter);
-app.use("/", viewsRouter);
-
-///////////////////////////////////
 app.use("/api/users", userRouter);
 app.use("/api/sessions", sessionRouter);
+app.use("/", viewsRouter);
 
 //Session
 //Renderizamos Login de usuario con session
 app.get("/login", (req, res) => {
-  // let usuario = req.query.usuario;
-  // req.session.usuario = usuario;
+  let usuario = req.query.usuario;
+  req.session.usuario = usuario;
   // res.send("guardamos el usuario por medio de query");
   res.render("login");
 });
@@ -97,9 +99,11 @@ app.get("/logout", (req, res) => {
 
 app.get("/usuario", (req, res) => {
   if (req.session.usuario) {
-    return res.send(
-      `El usuario registrado es el siguiente: ${req.session.usuario}`
-    );
+    const usuario = req.session.usuario;
+    const mensaje = `El usuario registrado es: 
+    ${usuario.first_name}
+    ${usuario.last_name}`;
+    return res.send(mensaje);
   } else {
     res.send("No tenemos un usuario registrado");
   }
@@ -108,3 +112,5 @@ app.get("/usuario", (req, res) => {
 app.listen(PUERTO, () => {
   console.log(`Servidor escuchando en el puerto ${PUERTO}`);
 });
+
+//BUSCAR CHAT DE LA CLASE 11******************************

@@ -2,29 +2,40 @@ const express = require("express");
 const router = express.Router();
 const UserModel = require("../models/user.model.js");
 const passport = require("passport");
+const generateToken = require("../utils/jsonwebtoken.js");
+const { isValidPassword } = require("../utils/hashbcrypt.js");
 
-//Login
+//Login con JSON Web Token
 
-router.post("/sessionlogin", async (req, res) => {
+router.post("/login", async (req, res) => {
   const { email, password } = req.body;
+
   try {
     const usuario = await UserModel.findOne({ email: email });
 
-    if (usuario) {
-      //Aca metemos el login:
-      if (usuario.password === process.env.DB_PASSWORD) {
-        req.session.login = true;
-        res
-          .status(200)
-          .send({ message: "Login correcto! Ma jes tuo seishon!" });
-      } else {
-        res.status(401).send({ error: "Contraseña no valida" });
-      }
-    } else {
-      res.status(404).send({ error: "Usuario no encontrado" });
+    if (!usuario) {
+      return res.status(400).send({ message: "Ese usuario no existe." });
     }
+
+    if (!isValidPassword(password, usuario)) {
+      return res.status(401).send({ message: "Credenciales inválidas." });
+    }
+
+    // Si el usuario existe y la contraseña es correcta, establecemos req.session.usuario
+    req.session.usuario = {
+      first_name: usuario.first_name,
+      last_name: usuario.last_name,
+      email: usuario.email,
+      id: usuario._id,
+    };
+
+    // Redirigimos al usuario a la ruta "/products" después de iniciar sesión correctamente.
+    res.redirect("/products");
   } catch (error) {
-    res.status(400).send({ error: "Error en el login, vamos a morir" });
+    console.log("Error en autenticación ", error);
+    res
+      .status(500)
+      .send({ status: "error", message: "Error interno del servidor" });
   }
 });
 
