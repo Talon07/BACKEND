@@ -39,7 +39,7 @@ class UserController {
 
       res.redirect("/api/users/profile");
     } catch (error) {
-      console.error(error);
+      req.logger.error("Error en la aplicacion");
       res.status(500).send("Error interno del servidor");
     }
   }
@@ -69,7 +69,7 @@ class UserController {
 
       res.redirect("/api/users/profile");
     } catch (error) {
-      console.error(error);
+      req.logger.error("Error en la aplicacion");
       res.status(500).send("Error interno del servidor");
     }
   }

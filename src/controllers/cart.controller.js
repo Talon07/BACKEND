@@ -154,7 +154,7 @@ class CartController {
 
       res.status(200).json({ productosNoDisponibles });
     } catch (error) {
-      console.error("Error al procesar la compra:", error);
+      req.logger.error("Error en la aplicacion");
       res.status(500).json({ error: "Error interno del servidor" });
     }
   }

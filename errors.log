@@ -1,0 +1,23 @@
+http: GET en /loggertest - 21:35:16
+error: Error en la aplicacion
+warning: Cuidado! hombre radiactivo!
+info: Estamos navegando la app
+http: GET en /login - 20:35:37
+http: GET en /css/style.css - 20:35:37
+http: GET en /images/github.png - 20:35:37
+http: GET en /images/facebook1.png - 20:35:37
+http: GET en /favicon.ico - 20:35:37
+http: GET en /loggertest - 20:35:47
+fatal: La aplicacion no funciona
+error: Error en la aplicacion
+warning: Cuidado! hombre radiactivo!
+info: Estamos navegando la app
+http: Error al procesar la solicitud
+debug: Depuracion activa
+http: GET en /loggertest - 20:36:05
+fatal: La Aplicacion no funciona
+error: Error en la aplicacion
+warning: Cuidado! hombre radiactivo!
+info: Estamos navegando la app
+http: Error al procesar la solicitud
+debug: Depuracion activa

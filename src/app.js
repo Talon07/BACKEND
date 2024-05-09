@@ -10,6 +10,7 @@ const path = require("path");
 const initializePassport = require("./config/passport.config.js");
 const passport = require("passport");
 const manejadorError = require("./middleware/error.js");
+const addLogger = require("./utils/logger.js");
 
 const sessionRouter = require("./routes/sessions.router.js");
 const productsRouter = require("./routes/products.router.js");
@@ -17,11 +18,13 @@ const cartsRouter = require("./routes/carts.router.js");
 const viewsRouter = require("./routes/views.router.js");
 const userRouter = require("./routes/user.router.js");
 const mockRouter = require("./routes/mock.router.js");
+const loggerRouter = require("./routes/logger.routes.js");
 
 //Middleware
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(manejadorError);
+app.use(addLogger);
 // app.use(express.static("./src/public"));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(cors());
@@ -56,6 +59,7 @@ app.use("/api/users", userRouter);
 app.use("/api/sessions", sessionRouter);
 app.use("/", viewsRouter);
 app.use("/", mockRouter);
+app.use("/", loggerRouter);
 
 //Session
 //Renderizamos Login de usuario con session

@@ -37,7 +37,7 @@ class ViewsController {
         cartId,
       });
     } catch (error) {
-      console.error("Error al obtener productos", error);
+      req.logger.error("Error al obtener productos");
       res.status(500).json({
         status: "error",
         error: "Error interno del servidor",
@@ -51,7 +51,7 @@ class ViewsController {
       const carrito = await cartRepository.obtenerProductosDeCarrito(cartId);
 
       if (!carrito) {
-        console.log("No existe ese carrito con el id");
+        req.logger.error("El carrito no existe");
         return res.status(404).json({ error: "Carrito no encontrado" });
       }
 
@@ -77,7 +77,7 @@ class ViewsController {
         cartId,
       });
     } catch (error) {
-      console.error("Error al obtener el carrito", error);
+      req.logger.error("Error al obtener el carrito");
       res.status(500).json({ error: "Error interno del servidor" });
     }
   }
@@ -94,7 +94,7 @@ class ViewsController {
     try {
       res.render("realtimeproducts");
     } catch (error) {
-      console.log("error en la vista real time", error);
+      req.logger.error("Error en la aplicacion realtime");
       res.status(500).json({ error: "Error interno del servidor" });
     }
   }
