@@ -1,20 +1,40 @@
-<h1> Productos </h1>
-{{#each productos}}
-  <div class="card">
-    <h2>{{title}}</h2>
-    <p> {{_id}} </p>
-    <p>{{description}}</p>
-    <p>Price: ${{price}}</p>
-    <p>Category: {{category}} </p>
-    <button> Agregar al Carrito </button>
-  </div>
-{{/each}}
+<div class="containerTittle">
+  <h1 class="tittleProducts">Productos</h1>
+  <a href="/carts/{{cartId}}">
+    <i class="bi bi-cart cart-icon"></i>
+  </a>
+  
+</div>
+<div class="containerProducts">
+    <div class="row">
+        {{#each productos}}
+        <div class="card col-xl-4 col-md-6 col-sm-12">
+            <img src="{{img}}" alt="" class="card-img-top">
+            <div class="card-body">
+                <h2 class="card-title">{{title}}</h2>
+                <p class="card-text">{{description}}</p>
+                <p class="card-text">Price: ${{price}}</p>
+                <form action="/api/carts/{{../cartId}}/product/{{id}}" method="POST">
+                    <button class="btnMios" type="submit">Agregar al Carrito</button>
+                </form>
+            </div>
+        </div>
+        {{/each}}
+    </div>
+</div>
 
-{{#if hasPrevPage}}
-  <a href="/products?page={{prevPage}}"> Anterior </a>
-{{/if}}
-{{#if hasNextPage}}
-  <a href="/products?page={{nextPage}}"> Siguiente </a>
-{{/if}}
 
-<p>Pagina {{currentPage}} de {{totalPages}} </p>
+
+
+
+<div class="container mt-3">
+    <div class="row text-center"> <!-- Centra los enlaces horizontalmente -->
+        {{#if hasPrevPage}}
+        <a href="/products?page={{prevPage}}"> Anterior </a>
+        {{/if}}
+        {{#if hasNextPage}}
+        <a href="/products?page={{nextPage}}"> Siguiente </a>
+        {{/if}}
+        <p>Pagina {{currentPage}} de {{totalPages}} </p>
+    </div>
+</div>

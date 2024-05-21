@@ -106,6 +106,19 @@ class ViewsController {
   async renderHome(req, res) {
     res.render("home");
   }
+
+  //Tercer integradora:
+  async renderResetPassword(req, res) {
+    res.render("passwordreset");
+  }
+
+  async renderCambioPassword(req, res) {
+    res.render("passwordcambio");
+  }
+
+  async renderConfirmacion(req, res) {
+    res.render("confirmacion-envio");
+  }
 }
 
 module.exports = ViewsController;

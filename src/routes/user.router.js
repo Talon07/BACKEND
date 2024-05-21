@@ -19,4 +19,9 @@ router.get(
   userController.admin
 );
 
+//Tercer integradora:
+router.post("/requestPasswordReset", userController.requestPasswordReset); // Nueva ruta
+router.post("/reset-password", userController.resetPassword);
+router.put("/premium/:uid", userController.cambiarRolPremium);
+
 module.exports = router;

@@ -133,7 +133,6 @@ class CartController {
 
       const userWithCart = await UserModel.findOne({ cart: cartId });
 
-      // Crear un ticket con los datos de la compra
       const ticket = new TicketModel({
         code: generateUniqueCode(),
         purchase_datetime: new Date(),
@@ -142,19 +141,26 @@ class CartController {
       });
       await ticket.save();
 
-      // Eliminar del carrito los productos que sí se compraron
       cart.products = cart.products.filter((item) =>
         productosNoDisponibles.some((productId) =>
           productId.equals(item.product)
         )
       );
-
-      // Guardar el carrito actualizado en la base de datos
       await cart.save();
 
-      res.status(200).json({ productosNoDisponibles });
+      await emailManager.enviarCorreoCompra(
+        userWithCart.email,
+        userWithCart.first_name,
+        ticket._id
+      );
+
+      res.render("checkout", {
+        cliente: userWithCart.first_name,
+        email: userWithCart.email,
+        numTicket: ticket._id,
+      });
     } catch (error) {
-      req.logger.error("Error en la aplicacion");
+      console.error("Error al procesar la compra:", error);
       res.status(500).json({ error: "Error interno del servidor" });
     }
   }
