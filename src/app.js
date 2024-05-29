@@ -121,4 +121,34 @@ app.listen(PUERTO, () => {
   console.log(`Servidor escuchando en el puerto ${PUERTO}`);
 });
 
-//BUSCAR CHAT DE LA CLASE 11******************************
+//1) Instalamos swagger:
+//npm install swagger-jsdoc swagger-ui-express
+
+//swagger-jsdoc: nos deja escribir la configuracion en un archivo .yaml (tambien json)  y a partir de ahi se genera un apidoc.
+
+//swagger-ui-express: nos permitirá linkear una interfaz gráfica para poder visualizar la documentacion.
+
+//2) Importamos los módulos:
+
+import swaggerJSDoc from "swagger-jsdoc";
+import swaggerUiExpress from "swagger-ui-express";
+
+//3) Creamos un objeto de configuración: swaggerOptions
+
+const swaggerOptions = {
+  definition: {
+    openapi: "3.0.1",
+    info: {
+      title: "Documentación de la App Adoptame",
+      description:
+        "App Web dedicada a encontrar familias para los perritos de la calle",
+    },
+  },
+  apis: ["./src/docs/**/*.yaml"],
+};
+
+//4) Conectamos Swagger a nuestro servidor de Express:
+
+const specs = swaggerJSDoc(swaggerOptions);
+
+app.use("/apidocs", swaggerUiExpress.serve, swaggerUiExpress.setup(specs));
