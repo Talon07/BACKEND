@@ -130,25 +130,21 @@ app.listen(PUERTO, () => {
 
 //2) Importamos los módulos:
 
-import swaggerJSDoc from "swagger-jsdoc";
-import swaggerUiExpress from "swagger-ui-express";
+const swaggerJSDoc = require("swagger-jsdoc");
+const swaggerUiExpress = require("swagger-ui-express");
 
-//3) Creamos un objeto de configuración: swaggerOptions
-
+// Creamos un objeto de configuración: swaggerOptions
 const swaggerOptions = {
   definition: {
     openapi: "3.0.1",
     info: {
-      title: "Documentación de la App Adoptame",
-      description:
-        "App Web dedicada a encontrar familias para los perritos de la calle",
+      title: "Documentacion de la App Tienda Marolio",
+      description: "E-commerce",
     },
   },
   apis: ["./src/docs/**/*.yaml"],
 };
 
-//4) Conectamos Swagger a nuestro servidor de Express:
-
+// Conectamos Swagger a nuestro servidor de Express
 const specs = swaggerJSDoc(swaggerOptions);
-
 app.use("/apidocs", swaggerUiExpress.serve, swaggerUiExpress.setup(specs));

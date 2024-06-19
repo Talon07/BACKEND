@@ -47,7 +47,7 @@ class UserController {
   async login(req, res) {
     const { email, password } = req.body;
     try {
-      const usuarioEncontrado = await UserModel.findOne({ email });
+      const usuarioEncontrado = await userRepository.findByEmail(email);
 
       if (!usuarioEncontrado) {
         return res.status(401).send("Usuario no válido");
@@ -62,6 +62,10 @@ class UserController {
         expiresIn: "1h",
       });
 
+      // Actualizamos la propiedad last_connection (para la fecha donde se logea)
+      usuarioEncontrado.last_connection = new Date();
+      await usuarioEncontrado.save();
+
       res.cookie("coderCookieToken", token, {
         maxAge: 3600000,
         httpOnly: true,
@@ -69,7 +73,7 @@ class UserController {
 
       res.redirect("/api/users/profile");
     } catch (error) {
-      req.logger.error("Error en la aplicacion");
+      console.error(error);
       res.status(500).send("Error interno del servidor");
     }
   }
@@ -86,6 +90,18 @@ class UserController {
   }
 
   async logout(req, res) {
+    if (req.user) {
+      try {
+        // Actualizar la propiedad last_connection (para la fecha cuando se deslogea)
+        req.user.last_connection = new Date();
+        await req.user.save();
+      } catch (error) {
+        console.error(error);
+        res.status(500).send("Error interno del servidor");
+        return;
+      }
+    }
+
     res.clearCookie("coderCookieToken");
     res.redirect("/login");
   }
