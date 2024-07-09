@@ -9,15 +9,10 @@ body {
   flex-wrap: wrap;
 }
 
-.card {
-  margin: 3%;
-  padding: 2%;
-  text-align: center;
-  color: white;
-  background-color: #222;
-  border-radius: 6px;
-  width: 250px;
-  height: 150px;
+/* IMAGENES */
+.imgP {
+  width: auto;
+  height: 250px;
 }
 
 /* ESTILOS LOGIN */
@@ -177,4 +172,58 @@ button[type="submit"]:hover {
 
 .custom-btn:hover {
   background-color: #0056b3;
+}
+
+/* //ESTILOS PROFILE */
+
+.carrito {
+  /* Contenedor principal del carrito */
+  width: 80%; /* Ajusta el ancho según tus necesidades */
+  margin: 0 auto; /* Centra el carrito en la página */
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.titulo-carrito {
+  text-align: center;
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.lista-productos {
+  list-style: none;
+  padding: 0;
+}
+
+.producto-item {
+  /* Elemento individual para cada producto */
+  margin-bottom: 20px;
+  border: 1px solid #ddd;
+  padding: 15px;
+  border-radius: 5px;
+}
+
+.card-title {
+  font-weight: bold;
+}
+
+.card-text {
+  margin-bottom: 10px;
+}
+
+.btn-danger {
+  background-color: #dc3545;
+  border-color: #dc3545;
+}
+
+.total-compra {
+  text-align: right;
+  font-weight: bold;
+  margin-top: 20px;
+}
+
+.btn-success {
+  background-color: #28a745;
+  border-color: #28a745;
 }

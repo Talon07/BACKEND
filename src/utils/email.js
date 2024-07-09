@@ -12,61 +12,10 @@ class EmailManager {
     });
   }
 
-  async eliminarProductoDeCarrito(req, res) {
-    const cartId = req.params.cid;
-    const productId = req.params.pid;
-
-    try {
-      // Obtener el carrito y el producto
-      const carrito = await cartRepository.obtenerProductosDelCarrito(cartId);
-      const producto = carrito.products.find(
-        (p) => p.product._id.toString() === productId
-      );
-
-      // Eliminar el producto del carrito
-      if (producto) {
-        await cartRepository.eliminarProducto(cartId, productId);
-
-        // Verificar si el producto pertenece a un usuario premium
-        if (producto.product.userType === "premium") {
-          // Configurar el transporte de nodemailer
-          const transporter = nodemailer.createTransport({
-            service: "Gmail", // o el servicio de correo que estés utilizando
-            auth: {
-              user: "tu-correo@gmail.com",
-              pass: "tu-contraseña",
-            },
-          });
-
-          // Configurar el correo electrónico
-          const mailOptions = {
-            from: "tu-correo@gmail.com",
-            to: "correo-del-usuario-premium@example.com",
-            subject: "Producto Eliminado del Carrito",
-            text: `El producto ${producto.product.title} ha sido eliminado del carrito.`,
-          };
-
-          // Enviar el correo electrónico
-          await transporter.sendMail(mailOptions);
-        }
-
-        res.json({
-          status: "success",
-          message: "Producto eliminado del carrito correctamente",
-        });
-      } else {
-        res.status(404).json({ error: "Producto no encontrado en el carrito" });
-      }
-    } catch (error) {
-      console.error("Error al eliminar producto del carrito:", error);
-      res.status(500).send("Error interno del servidor");
-    }
-  }
-
   async enviarCorreoCompra(email, first_name, ticket) {
     try {
       const mailOptions = {
-        from: "Coder Test <ignaciotalon07@gmail.com>",
+        from: "Coder Test <coderhouse50015@gmail.com>",
         to: email,
         subject: "Confirmación de compra",
         html: `
@@ -108,3 +57,6 @@ class EmailManager {
 }
 
 module.exports = EmailManager;
+
+// user: process.env.EMAIL_USER,
+// pass: process.env.EMAIL_PASS,

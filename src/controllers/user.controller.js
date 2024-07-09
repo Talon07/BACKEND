@@ -3,8 +3,19 @@ const CartModel = require("../models/cart.model.js");
 const jwt = require("jsonwebtoken");
 const { createHash, isValidPassword } = require("../utils/hashbcrypt.js");
 const UserDTO = require("../dto/user.dto.js");
+const { sendInactiveAccountEmail } = require("../utils/email");
 
 class UserController {
+  async getAllUsers(req, res) {
+    try {
+      const users = await UserModel.find({}, "first_name last_name email role");
+      res.json(users);
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Error interno del servidor");
+    }
+  }
+
   async register(req, res) {
     const { first_name, last_name, email, password, age } = req.body;
     try {
@@ -47,7 +58,7 @@ class UserController {
   async login(req, res) {
     const { email, password } = req.body;
     try {
-      const usuarioEncontrado = await userRepository.findByEmail(email);
+      const usuarioEncontrado = await UserModel.findOne({ email });
 
       if (!usuarioEncontrado) {
         return res.status(401).send("Usuario no válido");
@@ -104,6 +115,43 @@ class UserController {
 
     res.clearCookie("coderCookieToken");
     res.redirect("/login");
+  }
+
+  async limpiarUsuariosInactivos() {
+    try {
+      const dosDiasAtras = new Date();
+      dosDiasAtras.setDate(dosDiasAtras.getDate() - 2);
+
+      const usuariosInactivos = await UserModel.find({
+        last_connection: { $lt: dosDiasAtras },
+      });
+
+      if (usuariosInactivos.length > 0) {
+        await UserModel.deleteMany({
+          _id: { $in: usuariosInactivos.map((usuario) => usuario._id) },
+        });
+
+        usuariosInactivos.forEach(async (usuario) => {
+          await sendInactiveAccountEmail(usuario.email);
+        });
+
+        return {
+          success: true,
+          message: `${usuariosInactivos.length} usuarios inactivos eliminados y notificados.`,
+        };
+      } else {
+        return {
+          success: true,
+          message: "No se encontraron usuarios inactivos para eliminar.",
+        };
+      }
+    } catch (error) {
+      console.error("Error al limpiar usuarios inactivos:", error);
+      return {
+        success: false,
+        message: "Error al limpiar usuarios inactivos.",
+      };
+    }
   }
 
   async admin(req, res) {
@@ -195,26 +243,42 @@ class UserController {
   }
 
   async cambiarRolPremium(req, res) {
+    const { uid } = req.params;
     try {
-      const { uid } = req.params;
-
-      const user = await UserModel.findById(uid);
+      const user = await userRepository.findById(uid);
 
       if (!user) {
-        return res.status(404).json({ message: "Usuario no encontrado" });
+        return res.status(404).send("Usuario no encontrado");
+      }
+
+      // Verificamos si el usuario tiene la documentacion requerida:
+      const documentacionRequerida = [
+        "Identificacion",
+        "Comprobante de domicilio",
+        "Comprobante de estado de cuenta",
+      ];
+
+      const userDocuments = user.documents.map((doc) => doc.name);
+
+      const tieneDocumentacion = documentacionRequerida.every((doc) =>
+        userDocuments.includes(doc)
+      );
+
+      if (!tieneDocumentacion) {
+        return res
+          .status(400)
+          .send(
+            "El usuario tiene que completar toda la documentacion requerida"
+          );
       }
 
       const nuevoRol = user.role === "usuario" ? "premium" : "usuario";
 
-      const actualizado = await UserModel.findByIdAndUpdate(
-        uid,
-        { role: nuevoRol },
-        { new: true }
-      );
-      res.json(actualizado);
+      res.send(nuevoRol);
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Error interno del servidor" });
+      res
+        .status(500)
+        .send("Error del servidor, Hector tendra gripe dos semanas mas");
     }
   }
 }

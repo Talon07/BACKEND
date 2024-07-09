@@ -17,12 +17,12 @@ class SocketManager {
 
       socket.on("eliminarProducto", async (id) => {
         await productRepository.eliminarProducto(id);
-        this.emitUpdatedProducts(socket);
+        this.emitUpdatedProducts();
       });
 
       socket.on("agregarProducto", async (producto) => {
         await productRepository.agregarProducto(producto);
-        this.emitUpdatedProducts(socket);
+        this.emitUpdatedProducts();
       });
 
       socket.on("message", async (data) => {
@@ -33,8 +33,8 @@ class SocketManager {
     });
   }
 
-  async emitUpdatedProducts(socket) {
-    socket.emit("productos", await productRepository.obtenerProductos());
+  async emitUpdatedProducts() {
+    this.io.emit("productos", await productRepository.obtenerProductos());
   }
 }
 

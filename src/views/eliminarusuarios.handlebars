@@ -1,0 +1,13 @@
+<h1>Lista de Usuarios Inactivos a Eliminar</h1>
+{{#if usuariosInactivos.length}}
+  <ul>
+    {{#each usuariosInactivos}}
+      <li>{{this.nombre}} - Última Conexión: {{this.lastActivity}}</li>
+    {{/each}}
+  </ul>
+  <form method="POST" action="/eliminarUsuarios">
+    <input type="submit" value="Eliminar Usuarios" />
+  </form>
+{{else}}
+  <p>No hay usuarios inactivos para eliminar.</p>
+{{/if}}

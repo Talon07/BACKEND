@@ -1,20 +1,30 @@
-<h1>Mi Perfil</h1>
-
-<div class="profile-card">
-  <p>Bienvenido, {{user.nombre}} {{user.apellido}}!</p>
-  <p>Rol: {{user.role}}</p>
-
-  {{#if this.isAdmin}}
-    <a class="btnMios" href="/realtimeproducts">Modificar Productos</a>
-  {{else}}
-    {{#if this.isPremium}}
-      <a class="btnMios" href="/realtimeproducts">Panel Premium</a>
+<div class="card d-flex justify-content-center text-center bg-body-secondary">
+  <h1>Mi Perfil</h1>
+  <img
+    src="../public/images/facebook1.png"
+    class="rounded mx-auto d-block"
+    alt="imagen de usuario"
+  />
+  <div class="card-body">
+    <h5 class="card-title">Bienvenido, {{user.nombre}} {{user.apellido}}!</h5>
+    <p>Rol: {{user.role}}</p>
+    {{#if this.isAdmin}}
+      <a class="btn btn-outline-info ml-3" href="/realtimeproducts">Modificar
+        Productos</a>
+      <br />
+      <a class="btn btn-outline-info ml-3" href="/eliminarusuarios">Eliminar
+        Usuarios</a>
+    {{else}}
+      {{#if this.isPremium}}
+        <a class="btn btn-outline-info ml-3" href="/realtimeproducts">Panel
+          Premium</a>
+      {{/if}}
+      <a class="btn btn-outline-info m-3" href="/chat">Chat en vivo</a>
+      <a class="btn btn-outline-info m-3" href="/products">Tienda</a>
     {{/if}}
-    <a class="btnMios" href="/chat">Chat en vivo</a>
-    <a class="btnMios" href="/products">Tienda</a>
-  {{/if}}
 
-  <form action="/api/users/logout" method="POST">
-    <button class="btnMios" type="submit">Logout</button>
-  </form>
+    <form action="/api/users/logout" method="POST">
+      <button class="btn btn-dark mt-4" type="submit">Logout</button>
+    </form>
+  </div>
 </div>

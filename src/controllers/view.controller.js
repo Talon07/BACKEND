@@ -24,7 +24,6 @@ class ViewsController {
       });
 
       const cartId = req.user.cart.toString();
-      //console.log(cartId);
 
       res.render("products", {
         productos: nuevoArray,
@@ -48,7 +47,7 @@ class ViewsController {
   async renderCart(req, res) {
     const cartId = req.params.cid;
     try {
-      const carrito = await cartRepository.obtenerProductosDeCarrito(cartId);
+      const carrito = await cartRepository.obtenerProductosDelCarrito(cartId);
 
       if (!carrito) {
         req.logger.error("El carrito no existe");
@@ -70,6 +69,9 @@ class ViewsController {
           cartId,
         };
       });
+
+      // Log para verificar los productos en el carrito
+      console.log("Productos en carrito:", productosEnCarrito);
 
       res.render("carts", {
         productos: productosEnCarrito,
@@ -95,6 +97,17 @@ class ViewsController {
       res.render("realtimeproducts");
     } catch (error) {
       req.logger.error("Error en la aplicacion realtime");
+      res.status(500).json({ error: "Error interno del servidor" });
+    }
+  }
+
+  async renderEliminarUsuarios(req, res) {
+    try {
+      const usuariosInactivos = req.usuariosInactivos;
+
+      res.render("eliminarUsuarios", { usuariosInactivos });
+    } catch (error) {
+      req.logger.error("Error al renderizar la página de eliminar usuarios");
       res.status(500).json({ error: "Error interno del servidor" });
     }
   }

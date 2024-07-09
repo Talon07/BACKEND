@@ -1,4 +1,5 @@
-const socket = io();
+const socket = io(); // Verifica que la URL del servidor sea correcta si es necesario.
+
 const role = document.getElementById("role").textContent;
 const email = document.getElementById("email").textContent;
 
@@ -7,7 +8,6 @@ socket.on("productos", (data) => {
 });
 
 //Función para renderizar nuestros productos:
-
 const renderProductos = (productos) => {
   const contenedorProductos = document.getElementById("contenedorProductos");
   contenedorProductos.innerHTML = "";
@@ -43,7 +43,6 @@ const eliminarProducto = (id) => {
 };
 
 //Agregamos productos del formulario:
-
 document.getElementById("btnEnviar").addEventListener("click", () => {
   agregarProducto();
 });
@@ -57,14 +56,35 @@ const agregarProducto = () => {
   const producto = {
     title: document.getElementById("title").value,
     description: document.getElementById("description").value,
-    price: document.getElementById("price").value,
+    price: parseFloat(document.getElementById("price").value), // Asegúrate de convertir el precio a número
     img: document.getElementById("img").value,
     code: document.getElementById("code").value,
-    stock: document.getElementById("stock").value,
+    stock: parseInt(document.getElementById("stock").value), // Asegúrate de convertir el stock a número
     category: document.getElementById("category").value,
     status: document.getElementById("status").value === "true",
     owner,
   };
 
+  // Verifica que todos los campos obligatorios estén llenos
+  if (
+    !producto.title ||
+    !producto.description ||
+    !producto.price ||
+    !producto.code ||
+    !producto.stock ||
+    !producto.category
+  ) {
+    Swal.fire({
+      title: "Error",
+      text: "Por favor completa todos los campos obligatorios.",
+    });
+    return;
+  }
+
   socket.emit("agregarProducto", producto);
+  Swal.fire({
+    title: "Producto agregado",
+    text: "El producto ha sido agregado exitosamente.",
+    icon: "success",
+  });
 };

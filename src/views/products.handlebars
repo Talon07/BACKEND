@@ -1,40 +1,66 @@
-<div class="containerTittle">
-  <h1 class="tittleProducts">Productos</h1>
-  <a href="/carts/{{cartId}}">
-    <i class="bi bi-cart cart-icon"></i>
-  </a>
-  
+<div class="d-flex justify-content-between align-items-center bg-white p-3 mb-4">
+    <h1 class="text-center mb-0">Productos</h1>
+    <a href="/carts/{{cartId}}" class="btn btn-primary ms-5">
+        Ver Carrito
+        <i class="bi bi-cart cart-icon"></i>
+    </a>
 </div>
-<div class="containerProducts">
+
+<div class=" text-center bg-white p-3">
     <div class="row">
         {{#each productos}}
-        <div class="card col-xl-4 col-md-6 col-sm-12">
-            <img src="{{img}}" alt="" class="card-img-top">
-            <div class="card-body">
-                <h2 class="card-title">{{title}}</h2>
-                <p class="card-text">{{description}}</p>
-                <p class="card-text">Price: ${{price}}</p>
-                <form action="/api/carts/{{../cartId}}/product/{{id}}" method="POST">
-                    <button class="btnMios" type="submit">Agregar al Carrito</button>
-                </form>
+        <div class="col-md-4 mb-4">
+            <div class="card bg-dark text-white">
+                <img src="{{img}}" alt="" class="card-img-top imgP">
+                <div class="card-body">
+                    <h2 class="card-title">{{title}}</h2>
+                    <p class="card-text">{{description}}</p>
+                    <p class="card-text">Price: ${{price}}</p>
+
+                    <form action="/api/carts/{{../cartId}}/product/{{id}}" method="POST">
+                        <div class="input-group mb-3">
+                            <button type="button" class="btn btn-outline-secondary" onclick="decreaseQuantity(this)">-</button>
+                            <input type="number" class="form-control text-center" value="1" name="quantity" readonly>
+                            <button type="button" class="btn btn-outline-secondary" onclick="increaseQuantity(this)">+</button>
+                        </div>
+                        <button class="btn btn-primary w-100" type="submit">Agregar al Carrito</button>
+                    </form>
+                </div>
             </div>
         </div>
         {{/each}}
     </div>
 </div>
 
-
-
-
-
 <div class="container mt-3">
-    <div class="row text-center"> <!-- Centra los enlaces horizontalmente -->
-        {{#if hasPrevPage}}
-        <a href="/products?page={{prevPage}}"> Anterior </a>
-        {{/if}}
-        {{#if hasNextPage}}
-        <a href="/products?page={{nextPage}}"> Siguiente </a>
-        {{/if}}
-        <p>Pagina {{currentPage}} de {{totalPages}} </p>
+    <div class="row justify-content-center">
+        <div class="col-auto">
+            {{#if hasPrevPage}}
+            <a href="/products?page={{prevPage}}" class="btn btn-outline-primary me-2">Anterior</a>
+            {{/if}}
+            {{#if hasNextPage}}
+            <a href="/products?page={{nextPage}}" class="btn btn-outline-primary">Siguiente</a>
+            {{/if}}
+            <p class="mt-2">Página {{currentPage}} de {{totalPages}}</p>
+        </div>
     </div>
 </div>
+
+
+<script>
+    function decreaseQuantity(button) {
+        let input = button.parentNode.querySelector('input[type=number]');
+        let currentValue = parseInt(input.value);
+        if (!isNaN(currentValue) && currentValue > 1) {
+            input.value = currentValue - 1;
+        }
+    }
+
+    function increaseQuantity(button) {
+        let input = button.parentNode.querySelector('input[type=number]');
+        let currentValue = parseInt(input.value);
+        if (!isNaN(currentValue)) {
+            input.value = currentValue + 1;
+        }
+    }
+</script>

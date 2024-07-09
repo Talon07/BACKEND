@@ -1,5 +1,14 @@
+const TicketModel = require("../models/ticket.model.js");
+const UserModel = require("../models/user.model.js");
 const CartRepository = require("../repositories/cart.repository.js");
 const cartRepository = new CartRepository();
+const ProductRepository = require("../repositories/product.repository.js");
+const productRepository = new ProductRepository();
+const { generateUniqueCode, calcularTotal } = require("../utils/cartutil.js");
+const EmailManager = require("../services/errors/email.js");
+const emailManager = new EmailManager();
+const TicketRepository = require("../repositories/ticket.repository.js");
+const ticketRepository = new TicketRepository();
 
 class CartController {
   async nuevoCarrito(req, res) {
@@ -7,7 +16,7 @@ class CartController {
       const nuevoCarrito = await cartRepository.crearCarrito();
       res.json(nuevoCarrito);
     } catch (error) {
-      res.status(500).send("Error");
+      res.status(500).send("Error al crear el carrito");
     }
   }
 
@@ -17,7 +26,6 @@ class CartController {
       const productos = await cartRepository.obtenerProductosDelCarrito(
         carritoId
       );
-
       res.json(productos);
     } catch (error) {
       res.status(500).send("Error al obtener los productos del carrito");
@@ -31,7 +39,6 @@ class CartController {
 
     try {
       await cartRepository.agregarProducto(cartId, productId, quantity);
-
       res.send("Producto Agregado");
     } catch (error) {
       res.status(500).send("Error al agregar un producto al carrito");
@@ -41,15 +48,26 @@ class CartController {
   async eliminarProductoDeCarrito(req, res) {
     const cartId = req.params.cid;
     const productId = req.params.pid;
+
     try {
-      const carrito = await cartRepository.eliminarProducto(cartId, productId);
+      const updatedCart = await cartRepository.eliminarProductoDeCarrito(
+        cartId,
+        productId
+      );
+      const user = await UserModel.findOne({ cart: cartId });
+
+      if (user && user.isPremium) {
+        await EmailManager.enviarCorreoProductoEliminado(user.email, productId);
+      }
+
       res.json({
         status: "success",
-        message: "Producto eliminado correctamente",
-        carrito,
+        message: "Producto eliminado del carrito correctamente",
+        updatedCart,
       });
     } catch (error) {
-      res.status(500).send("Error al eliminar un producto del carrito");
+      console.error("Error al eliminar producto del carrito:", error);
+      res.status(500).send("Error interno del servidor");
     }
   }
 
@@ -96,7 +114,6 @@ class CartController {
     const cartId = req.params.cid;
     try {
       const carrito = await cartRepository.vaciarCarrito(cartId);
-
       res.json({
         status: "success",
         message: "Todos los productos del carrito fueron eliminados",
@@ -106,12 +123,13 @@ class CartController {
       res.status(500).send("Error al vaciar carrito");
     }
   }
+
   //Ultima Pre Entrega:
   async finalizarCompra(req, res) {
     const cartId = req.params.cid;
     try {
       // Obtener el carrito y sus productos
-      const cart = await cartRepository.obtenerProductosDeCarrito(cartId);
+      const cart = await cartRepository.obtenerProductosDelCarrito(cartId);
       const products = cart.products;
 
       // Inicializar un arreglo para almacenar los productos no disponibles
@@ -134,9 +152,12 @@ class CartController {
       const userWithCart = await UserModel.findOne({ cart: cartId });
 
       const ticket = new TicketModel({
-        code: generateUniqueCode(),
+        code: Math.random().toString(36).substring(2, 15), // Generar código único
         purchase_datetime: new Date(),
-        amount: calcularTotal(cart.products),
+        amount: products.reduce(
+          (total, item) => total + item.product.price * item.quantity,
+          0
+        ),
         purchaser: userWithCart._id,
       });
       await ticket.save();

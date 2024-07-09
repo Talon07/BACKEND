@@ -13,7 +13,9 @@ class CartRepository {
 
   async obtenerProductosDelCarrito(idCarrito) {
     try {
-      const carrito = await CartModel.findById(idCarrito);
+      const carrito = await CartModel.findById(idCarrito).populate(
+        "products.product"
+      );
       if (!carrito) {
         console.log("No existe ese carrito con el id");
         return null;
@@ -46,21 +48,21 @@ class CartRepository {
     }
   }
 
-  async eliminarProducto(cartId, productId) {
+  async eliminarProductoDeCarrito(cartId, productId) {
     try {
       const carrito = await CartModel.findById(cartId);
       if (!carrito) {
         throw new Error("Carrito no encontrado");
       }
-
       carrito.products = carrito.products.filter(
-        (item) => item.product._id.toString() !== productId
+        (item) => item.product.toString() !== productId
       );
-
       await carrito.save();
       return carrito;
     } catch (error) {
-      throw new Error("Error al eliminar producto del carrito");
+      throw new Error(
+        "Error al eliminar el producto del carrito: " + error.message
+      );
     }
   }
 
