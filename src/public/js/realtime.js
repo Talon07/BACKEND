@@ -1,4 +1,4 @@
-const socket = io(); // Verifica que la URL del servidor sea correcta si es necesario.
+const socket = io();
 
 const role = document.getElementById("role").textContent;
 const email = document.getElementById("email").textContent;
@@ -56,10 +56,10 @@ const agregarProducto = () => {
   const producto = {
     title: document.getElementById("title").value,
     description: document.getElementById("description").value,
-    price: parseFloat(document.getElementById("price").value), // Asegúrate de convertir el precio a número
+    price: parseFloat(document.getElementById("price").value),
     img: document.getElementById("img").value,
     code: document.getElementById("code").value,
-    stock: parseInt(document.getElementById("stock").value), // Asegúrate de convertir el stock a número
+    stock: parseInt(document.getElementById("stock").value),
     category: document.getElementById("category").value,
     status: document.getElementById("status").value === "true",
     owner,

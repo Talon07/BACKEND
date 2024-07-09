@@ -1,26 +1,69 @@
-<h1>Real Time Products</h1>
-<h2>Productos actualizados en tiempo real</h2>
-<h3 id="role">{{role}}</h3>
-<h3 id="email">{{email}}</h3>
+<div class="container my-5">
+  <h2 class="text-center mb-1">Real Time Products</h2>
+  <h3 id="role" class="text-center">{{name}}</h3>
+  <h3 id="email" class="text-center mb-4">{{email}}</h3>
 
-<div id="contenedorProductos"></div>
+  <div id="contenedorProductos" class="mb-5"></div>
 
-<h2>Formulario para agregar productos</h2>
+  <h4 class="mb-4 text-center">Formulario para agregar productos</h4>
 
-<form>
-  <input type="text" id="title" placeholder="Titulo" />
-  <input type="text" id="description" placeholder="Descripcion" />
-  <input type="number" id="price" placeholder="Precio" />
-  <input type="text" id="img" value="Sin Imagen" />
-  <input type="text" id="code" placeholder="Código" />
-  <input type="number" id="stock" placeholder="Stock" />
-  <input type="text" id="category" placeholder="Categoria" />
-  <select id="status">
-    <option value="true"> Activo </option>
-    <option value="false"> Inactivo </option>
-  </select>
-  <button type="button" id="btnEnviar"> Enviar </button>
-</form>
+  <form class="row g-3">
+    <div class="col-md-6">
+      <input type="text" id="title" class="form-control" placeholder="Titulo" />
+    </div>
+    <div class="col-md-6">
+      <input
+        type="text"
+        id="description"
+        class="form-control"
+        placeholder="Descripcion"
+      />
+    </div>
+    <div class="col-md-6">
+      <input
+        type="number"
+        id="price"
+        class="form-control"
+        placeholder="Precio"
+      />
+    </div>
+    <div class="col-md-6">
+      <input type="text" id="img" class="form-control" value="Sin Imagen" />
+    </div>
+    <div class="col-md-6">
+      <input type="text" id="code" class="form-control" placeholder="Código" />
+    </div>
+    <div class="col-md-6">
+      <input
+        type="number"
+        id="stock"
+        class="form-control"
+        placeholder="Stock"
+      />
+    </div>
+    <div class="col-md-6">
+      <input
+        type="text"
+        id="category"
+        class="form-control"
+        placeholder="Categoria"
+      />
+    </div>
+    <div class="col-md-6">
+      <select id="status" class="form-select">
+        <option value="true">Activo</option>
+        <option value="false">Inactivo</option>
+      </select>
+    </div>
+    <div class="col-12 text-center">
+      <button
+        type="button"
+        id="btnEnviar"
+        class="btn btn-primary"
+      >Enviar</button>
+    </div>
+  </form>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
